@@ -1,0 +1,139 @@
+.adminpage {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(92, 93, 94, 0.1);
+    flex-direction: column;
+    .table-statistic {
+        width: 1000px;
+        height: 800px;
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        background-color: #fff;
+        box-shadow: 3px 4px 4px 4px rgba(171, 172, 173, 0.4);
+        margin-bottom: 20px;
+        .text-blue {
+            color: rgb(51, 51, 248);
+        }
+    }
+    .title {
+        width: 100%;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        margin-left: 50px;
+        margin-top: 64px;
+        margin-bottom: 20px;
+    }
+    .form-select-date {
+        width: 600px;
+        height: 180px;
+        display: flex;
+        margin: 10px auto;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff;
+        flex-direction: column;
+        h3 {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .selected-date {
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .begin-date {
+                width: 250px;
+                height: 50px;
+                display: flex;
+                &:first-child {
+                    margin-right: 10px;
+                }
+            }
+        }
+        .group-btn {
+            margin-top: 30px;
+        }
+    }
+    .loading-page {
+        width: 100%;
+        height: 500px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff;
+    }
+    .thongke1 {
+        width: 100%;
+        height: 180px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        h3 {
+            margin-block-start: 0;
+            margin-block-end: 0;
+            margin-top: 20px;
+            color: rgb(128, 128, 128);
+        }
+        .banthongke {
+            width: 250px;
+            height: 140px;
+            background-color: #fff;
+            box-shadow: 2px 2px 2px 2px rgba(92, 93, 94, 0.4);
+            margin: auto 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            &.tiennhap {
+                border-left: solid 5px rgb(250, 84, 84);
+            }
+            &.tienxuat {
+                border-left: solid 5px rgb(84, 250, 106);
+            }
+            &.tienloi {
+                border-left: solid 5px rgb(84, 114, 250);
+            }
+            &.soluongnhap {
+                border-left: solid 5px rgb(243, 143, 49);
+            }
+            &.soluongxuat {
+                border-left: solid 5px rgb(74, 235, 247);
+            }
+        }
+    }
+    .thongke2 {
+        width: 100%;
+        height: 500px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(255, 251, 251, 0.02);
+        .chart {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            margin: auto;
+            height: 450px;
+            &.chart1 {
+                width: 800px;
+            }
+            &.chart2 {
+                width: 450px;
+            }
+            .mota {
+                width: 100%;
+                height: 40px;
+            }
+        }
+    }
+}
