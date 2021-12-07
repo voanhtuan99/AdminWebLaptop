@@ -15,6 +15,7 @@ export default function DeleteCate() {
     const [cate, setCate] = useState('')
     const dispatch = useDispatch()
     const history = useHistory()
+    const [isLoadingBtn, setIsLoadingBtn] = useState(false)
     useEffect(() => {
         Aos.init({})
         axios({
@@ -26,6 +27,7 @@ export default function DeleteCate() {
             })
     }, [])
     const deleteCate = () => {
+        setIsLoadingBtn(true)
         axios({
             method: "DELETE",
             url: `http://localhost:8080/api/category/${params.id}`,
@@ -44,6 +46,7 @@ export default function DeleteCate() {
                 });
                 const action = deleteCategory(params.id)
                 dispatch(action)
+                setIsLoadingBtn(false)
             })
             .catch(err => {
                 toast.error(`Xóa loại thất bại`, {
@@ -55,6 +58,7 @@ export default function DeleteCate() {
                     draggable: true,
                     progress: undefined,
                 });
+                setIsLoadingBtn(false)
             })
     }
     return (
@@ -68,7 +72,7 @@ export default function DeleteCate() {
                 <div className="cate-name">Tên loại: <strong>{cate.category_name}</strong></div>
                 <div className="group-button">
                     <Stack direction="row" spacing={2}>
-                        <Button variant="contained" color="error" startIcon={<DeleteOutlineIcon />} onClick={deleteCate}>
+                        <Button disabled={isLoadingBtn} variant="contained" color="error" startIcon={<DeleteOutlineIcon />} onClick={deleteCate}>
                             Xóa
                         </Button>
                         <Button variant="outlined" onClick={() => history.push('/admin/category')} endIcon={<ArrowBackIcon />}>

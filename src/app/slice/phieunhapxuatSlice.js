@@ -12,19 +12,18 @@ const Phieunhapxuat = createSlice({
             state.push(action.payload)
             return state
         },
-        delPNXL: (state, action) => {
-            const cateId = action.payload
-            state.filter(item => {
-                console.log(item.id, JSON.parse(cateId))
-                if (item.id !== JSON.parse(cateId)) {
-                    console.log('aaaa')
-                }
-            })
-            return state.filter(item => item.id !== JSON.parse(cateId))
+        cancelPNX: (state, action) => {
+            console.log(action.payload)
+            const newPhieunx = action.payload
+            const pnxIndex = state.findIndex(item => JSON.stringify(item.nhapId) === JSON.stringify(newPhieunx.id))
+            if (pnxIndex >= 0) {
+                state[pnxIndex] = newPhieunx
+            }
+            return state
         }
     }
 })
 
 const { reducer, actions } = Phieunhapxuat;
-export const { getAllPNX, AddPNX, delPNXL } = actions;
+export const { getAllPNX, AddPNX, cancelPNX } = actions;
 export default reducer;

@@ -12,39 +12,49 @@ export default function AddBrand() {
     const history = useHistory()
     const dispatch = useDispatch()
     const [brand, setBrand] = useState('')
+    const [isLoadingBtn, setIsLoadingBtn] = useState(false)
     const createBrand = () => {
-        axios({
-            method: "POST",
-            url: "http://localhost:8080/api/brand/add",
-            headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
-            data: {
-                brand_name: brand
-            }
-        })
-            .then((res) => {
-                toast.success(`Thêm loại ${res.data.data.brand_name} thành công`, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                const action = addBrand(res.data.data)
-                dispatch(action)
+        if (brand === '') {
+            document.querySelector('.errorbrand p').innerHTML = 'Tên hãng không được để trống'
+        }
+        else {
+            setIsLoadingBtn(true)
+            axios({
+                method: "POST",
+                url: "http://localhost:8080/api/brand/add",
+                headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
+                data: {
+                    brand_name: brand
+                }
             })
-            .catch(() => {
-                toast.success(`Loại đã tồn tại`, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-            })
+                .then((res) => {
+                    toast.success(`Thêm loại ${res.data.data.brand_name} thành công`, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    const action = addBrand(res.data.data)
+                    dispatch(action)
+                    setIsLoadingBtn(false)
+                })
+                .catch(() => {
+                    toast.success(`Loại đã tồn tại`, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setIsLoadingBtn(false)
+                })
+
+        }
     }
     return (
         <div className="overlays1">
@@ -61,13 +71,19 @@ export default function AddBrand() {
                             size="small"
                             fullWidth={true}
                             value={brand}
-                            onChange={(e) => setBrand(e.target.value)}
+                            onChange={(e) => {
+                                if (brand !== '') {
+                                    document.querySelector('.errorbrand p').innerHTML = ''
+                                }
+                                setBrand(e.target.value)
+                            }}
                         />
                     </div>
                 </div>
+                <div className="error1 errorbrand"><p></p></div>
                 <div className="group-button">
                     <Stack direction="row" spacing={2}>
-                        <Button variant="contained" startIcon={<AddIcon />} onClick={createBrand}>
+                        <Button disabled={isLoadingBtn} variant="contained" startIcon={<AddIcon />} onClick={createBrand}>
                             Create
                         </Button>
                         <Button variant="outlined" onClick={() => history.push('/admin/brand')} endIcon={<ArrowBackIcon />}>

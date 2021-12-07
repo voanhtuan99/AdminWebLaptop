@@ -16,7 +16,7 @@ import { toast, ToastContainer } from 'react-toastify';
 export default function CreateImport() {
     const history = useHistory()
     const [companies, setCompanies] = useState([])
-    const [company, setCompany] = useState()
+    const [company, setCompany] = useState({})
     const [loading, setLoading] = useState(false)
     const [products, setProducts] = useState([])
     const [ShowAddDetail, setShowAddDetail] = useState(false)
@@ -79,33 +79,9 @@ export default function CreateImport() {
         setListDetail(details)
     }
     const createImport = () => {
-        setIsLoadingBtn(true)
-        axios({
-            method: "POST",
-            url: `http://localhost:8080/api/pnhapxuat/add`,
-            headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
-            data: {
-                iduser: localStorage.getItem('idUser'),
-                idcompany: company.id
-            }
-        }).then(res => {
-            listDetail.forEach(item => {
-                axios({
-                    method: "POST",
-                    url: 'http://localhost:8080/api/ctpnhaps/add',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
-                    data: {
-                        quantity: item.quantity,
-                        price: item.price,
-                        idimport: res.data.data.nhapId,
-                        idproduct: item.product.id
-                    }
-                })
-            })
-            const action = AddPNX(res.data.data)
-            dispatch(action)
-        }).then(() => {
-            toast.success('Tạo phiếu thành công', {
+
+        if (Object.keys(company).length === 0) {
+            toast.warning('Vui lòng chọn đơn vị vận chuyển', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -113,13 +89,53 @@ export default function CreateImport() {
                 pauseOnHover: true,
                 draggable: true,
                 progress: undefined,
-                style: {
-                    background: "#fff",
-                    color: "#00ff14"
-                }
+
             });
-            setIsLoadingBtn(false)
-        })
+
+        }
+        else {
+            setIsLoadingBtn(true)
+            axios({
+                method: "POST",
+                url: `http://localhost:8080/api/pnhapxuat/add`,
+                headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
+                data: {
+                    iduser: localStorage.getItem('idUser'),
+                    idcompany: company.id
+                }
+            }).then(res => {
+                listDetail.forEach(item => {
+                    axios({
+                        method: "POST",
+                        url: 'http://localhost:8080/api/ctpnhaps/add',
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
+                        data: {
+                            quantity: item.quantity,
+                            price: item.price,
+                            idimport: res.data.data.nhapId,
+                            idproduct: item.product.id
+                        }
+                    })
+                })
+                const action = AddPNX(res.data.data)
+                dispatch(action)
+            }).then(() => {
+                toast.success('Tạo phiếu thành công', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    style: {
+                        background: "#fff",
+                        color: "#00ff14"
+                    }
+                });
+                setIsLoadingBtn(false)
+            })
+        }
     }
     return (
         <div className="overlays1">
@@ -138,9 +154,9 @@ export default function CreateImport() {
                                 <Select options={companies} onChange={onChangeSelect} />
                             </div>
                         </div>
-                        <span className="tencty">{company ? `Công ty: ${company.company_name}` : ''}</span>
+                        <span className="tencty">{JSON.stringify(company) !== "{}" ? `Công ty: ${company.company_name}` : ''}</span>
                         <div className="select-company" data-aos-duration="500" data-aos="zoom-up" style={{ zIndex: 14 }}>
-                            <strong>Công ty: </strong>
+                            <strong>Chọn sản phẩm: </strong>
                             <div className="form-select">
                                 <Select options={products} onChange={onChangeProduct} />
                             </div>

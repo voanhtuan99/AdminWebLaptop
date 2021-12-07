@@ -15,43 +15,53 @@ export default function AddCate() {
     const [cate, setCate] = useState('')
     const dispatch = useDispatch()
     const history = useHistory()
+    const [isLoadingBtn, setIsLoadingBtn] = useState(false)
     useEffect(() => {
         Aos.init({
         })
     }, [])
     const addCate = () => {
-        axios({
-            method: "POST",
-            url: "http://localhost:8080/api/category/add",
-            headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
-            data: {
-                category_name: cate
-            }
-        })
-            .then((res) => {
-                toast.success(`Thêm loại ${res.data.data.category_name} thành công`, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                const action = addCategory(res.data.data)
-                dispatch(action)
+
+        if (cate === '') {
+            document.querySelector('.errorcate p').innerHTML = 'Tên loại không được để trống'
+        }
+        else {
+            setIsLoadingBtn(true)
+            axios({
+                method: "POST",
+                url: "http://localhost:8080/api/category/add",
+                headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
+                data: {
+                    category_name: cate
+                }
             })
-            .catch(() => {
-                toast.success(`Loại đã tồn tại`, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-            })
+                .then((res) => {
+                    toast.success(`Thêm loại ${res.data.data.category_name} thành công`, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    const action = addCategory(res.data.data)
+                    dispatch(action)
+                    setIsLoadingBtn(false)
+                })
+                .catch(() => {
+                    toast.success(`Loại đã tồn tại`, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setIsLoadingBtn(false)
+                })
+        }
     }
     return (
         <div className="overlays1">
@@ -68,13 +78,21 @@ export default function AddCate() {
                             size="small"
                             fullWidth={true}
                             value={cate}
-                            onChange={(event) => setCate(event.target.value)}
+                            onChange={(event) => {
+                                if (cate !== '') {
+                                    document.querySelector('.errorcate p').innerHTML = ''
+                                }
+                                setCate(event.target.value)
+
+                            }}
                         />
                     </div>
+
                 </div>
+                <div className="error1 errorcate"><p></p></div>
                 <div className="group-button">
                     <Stack direction="row" spacing={2}>
-                        <Button variant="contained" startIcon={<AddIcon />} onClick={addCate}>
+                        <Button disabled={isLoadingBtn} variant="contained" startIcon={<AddIcon />} onClick={addCate}>
                             Thêm
                         </Button>
                         <Button variant="outlined" onClick={() => history.push('/admin/category')} endIcon={<ArrowBackIcon />}>

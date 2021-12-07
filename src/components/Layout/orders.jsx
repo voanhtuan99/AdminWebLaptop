@@ -67,11 +67,11 @@ export default function Orders() {
         }
         const handleShowBtns = (item) => {
             document.getElementById(`grp${item}`).classList.toggle('active')
-            listOrder.forEach(e => {
-                if (e.id !== item) {
-                    document.getElementById(`grp${e.id}`).classList.remove('active')
-                }
-            })
+            // listOrder.forEach(e => {
+            //     if (e.id !== item) {
+            //         document.getElementById(`grp${e.id}`).classList.remove('active')
+            //     }
+            // })
         }
         listOrder && listOrder.forEach(item => {
             data.rows.push({

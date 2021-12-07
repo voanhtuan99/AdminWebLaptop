@@ -107,7 +107,7 @@ export default function BlockUser() {
                                 <Button variant="contained" color="error" startIcon={<LockIcon />} onClick={blockUser} disabled={disableBtn}>
                                     Khóa
                                 </Button>
-                                <Button variant="outlined" onClick={() => history.push('/admin/user')} endIcon={<ArrowBackIcon />}>
+                                <Button variant="outlined" onClick={() => history.push('/admin/users')} endIcon={<ArrowBackIcon />}>
                                     Thoát
                                 </Button>
                             </Stack>

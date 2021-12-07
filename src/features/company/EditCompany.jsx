@@ -20,6 +20,7 @@ export default function EditCompany() {
     const dispatch = useDispatch()
     const history = useHistory()
     const params = useParams()
+    const [isLoadingBtn, setIsLoadingBtn] = useState(false)
     useEffect(() => {
         Aos.init({
         })
@@ -37,7 +38,17 @@ export default function EditCompany() {
     }, [])
     const updateCompany = () => {
         console.log(company_name, company_type, company_address, company_phone);
+        if (company_name === '') {
+            document.querySelector('.errorname p').innerHTML = 'Tên công ty không được để trống'
+        }
+        if (company_address === '') {
+            document.querySelector('.erroraddress p').innerHTML = 'Địa chỉ không được để trống'
+        }
+        if (company_phone === '') {
+            document.querySelector('.errorphone p').innerHTML = 'Số điện thoại không được để trống'
+        }
         if (company_name !== '' && company_type !== '' && company_address !== '' && company_phone !== '') {
+            setIsLoadingBtn(true)
             axios({
                 method: "PUT",
                 url: `http://localhost:8080/api/company/${params.id}`,
@@ -50,7 +61,7 @@ export default function EditCompany() {
                 }
             })
                 .then((res) => {
-                    toast.success(`Thêm công ty ${res.data.data.company_name} thành công`, {
+                    toast.success(`Cập nhât thông tin thành công`, {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -61,9 +72,10 @@ export default function EditCompany() {
                     });
                     const action = editCompany(res.data.data)
                     dispatch(action)
+                    setIsLoadingBtn(false)
                 })
                 .catch(() => {
-                    toast.success(`Công ty đã tồn tại`, {
+                    toast.success(`Cập nhật thất bại`, {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -72,6 +84,7 @@ export default function EditCompany() {
                         draggable: true,
                         progress: undefined,
                     });
+                    setIsLoadingBtn(false)
                 })
         }
     }
@@ -80,6 +93,7 @@ export default function EditCompany() {
     }
     return (
         <div className="overlays1">
+
             <ToastContainer />
             <div className="form add-company" data-aos="zoom-up" data-aos-duration="800">
                 <h1 className="title add-cate">CREATE COMPANY</h1>
@@ -93,9 +107,15 @@ export default function EditCompany() {
                             size="small"
                             fullWidth={true}
                             value={company_name}
-                            onChange={(e) => setCompanyName(e.target.value)}
+                            onChange={(e) => {
+                                if (company_name !== '') {
+                                    document.querySelector('.errorname p').innerHTML = ''
+                                }
+                                setCompanyName(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 errorname" style={{ marginLeft: 200 }}><p></p></div>
                     <div className="cate-name">
                         <p>Type</p>
                         <div className="select">
@@ -126,9 +146,15 @@ export default function EditCompany() {
                             size="small"
                             fullWidth={true}
                             value={company_address}
-                            onChange={(e) => setCompanyAddress(e.target.value)}
+                            onChange={(e) => {
+                                if (company_address !== '') {
+                                    document.querySelector('.erroraddress p').innerHTML = ''
+                                }
+                                setCompanyAddress(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 erroraddress" style={{ marginLeft: 200 }}><p></p></div>
                     <div className="cate-name">
                         <p>Phone number</p>
                         <TextField
@@ -139,13 +165,19 @@ export default function EditCompany() {
                             fullWidth={true}
                             type="number"
                             value={company_phone}
-                            onChange={(e) => setCompanyPhone(e.target.value)}
+                            onChange={(e) => {
+                                if (company_phone !== '') {
+                                    document.querySelector('.errorphone p').innerHTML = ''
+                                }
+                                setCompanyPhone(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 errorphone" style={{ marginLeft: 200 }}><p></p></div>
                 </div>
                 <div className="group-button">
                     <Stack direction="row" spacing={2}>
-                        <Button variant="contained" startIcon={<SaveIcon />} onClick={updateCompany}>
+                        <Button disabled={isLoadingBtn} variant="contained" startIcon={<SaveIcon />} onClick={updateCompany}>
                             Cập nhật
                         </Button>
                         <Button variant="outlined" onClick={() => history.push('/admin/company')} endIcon={<ArrowBackIcon />}>

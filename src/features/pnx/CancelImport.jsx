@@ -8,7 +8,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Button from '@mui/material/Button';
 import { useDispatch } from "react-redux";
-import { delPNXL } from "../../app/slice/phieunhapxuatSlice";
+import { cancelPNX, getAllPNX } from "../../app/slice/phieunhapxuatSlice";
 export default function CancelImport() {
     const params = useParams()
     const history = useHistory()
@@ -37,24 +37,49 @@ export default function CancelImport() {
             method: 'PUT',
             url: `http://localhost:8080/api/pnhapxuat/cancel/${id}`,
             headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` }
-        }).then(() => {
-            setIsLoadingBtn(false)
-            const action = delPNXL(id)
-            dispatch(action)
-            toast.success('Xóa phiếu thành công', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                style: {
-                    background: "#fff",
-                    color: "#00ff14"
-                }
-            });
         })
+
+            .then((res) => {
+                if (res.data.data === null) {
+                    setIsLoadingBtn(false)
+                    toast.error('Số lượng hàng trong kho không đủ', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+
+                    });
+                }
+                else {
+                    axios({
+                        method: "GET",
+                        url: "http://localhost:8080/api/pnhapxuat",
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` }
+                    }).then(res => {
+                        const action = getAllPNX(res.data.data)
+                        dispatch(action)
+                    }).then(() => {
+                        setIsLoadingBtn(false)
+                        toast.success('Xóa phiếu thành công', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            style: {
+                                background: "#fff",
+                                color: "#00ff14"
+                            }
+                        });
+                    })
+
+                }
+            })
     }
     return (
         <div className="overlays1">

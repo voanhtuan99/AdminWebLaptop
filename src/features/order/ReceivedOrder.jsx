@@ -9,10 +9,13 @@ import { useHistory, useParams } from 'react-router';
 import { toast, ToastContainer } from 'react-toastify';
 import { orange, purple } from '@mui/material/colors';
 import { styled } from '@mui/system';
+import { editOrder } from '../../app/slice/orderSlice';
+import { useDispatch } from 'react-redux';
 export default function ReceivedOrder() {
     const params = useParams()
     const history = useHistory()
     const [order, setOrder] = useState({});
+    const dispatch = useDispatch()
     useEffect(() => {
         Aos.init({
         })
@@ -32,6 +35,8 @@ export default function ReceivedOrder() {
             headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
         })
             .then(res => {
+                const action = editOrder(res.data.data)
+                dispatch(action)
                 toast.success(`Đã hủy đơn hàng`, {
                     position: "top-right",
                     autoClose: 5000,

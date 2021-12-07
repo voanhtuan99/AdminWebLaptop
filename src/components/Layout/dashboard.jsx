@@ -163,7 +163,7 @@ export default function Dashboard() {
                             },
                             headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
                         }).then(res => {
-                            setStatisticSold(res.data)
+                            setStatisticSold(res.data.data)
                         })
                     }).then(() => {
                         axios({

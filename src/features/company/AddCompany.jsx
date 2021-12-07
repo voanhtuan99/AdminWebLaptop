@@ -19,13 +19,24 @@ export default function AddCompany() {
     const [company_phone, setCompanyPhone] = useState('')
     const dispatch = useDispatch()
     const history = useHistory()
+    const [isLoadingBtn, setIsLoadingBtn] = useState(false)
     useEffect(() => {
         Aos.init({
         })
     }, [])
     const createCompany = () => {
         console.log(company_name, company_type, company_address, company_phone);
+        if (company_name === '') {
+            document.querySelector('.errorname p').innerHTML = 'Tên công ty không được để trống'
+        }
+        if (company_address === '') {
+            document.querySelector('.erroraddress p').innerHTML = 'Địa chỉ không được để trống'
+        }
+        if (company_phone === '') {
+            document.querySelector('.errorphone p').innerHTML = 'Số điện thoại không được để trống'
+        }
         if (company_name !== '' && company_type !== '' && company_address !== '' && company_phone !== '') {
+            setIsLoadingBtn(true)
             axios({
                 method: "POST",
                 url: "http://localhost:8080/api/company/add",
@@ -49,6 +60,7 @@ export default function AddCompany() {
                     });
                     const action = addCompany(res.data.data)
                     dispatch(action)
+                    setIsLoadingBtn(false)
                 })
                 .catch(() => {
                     toast.success(`Công ty đã tồn tại`, {
@@ -60,6 +72,7 @@ export default function AddCompany() {
                         draggable: true,
                         progress: undefined,
                     });
+                    setIsLoadingBtn(false)
                 })
         }
     }
@@ -81,9 +94,15 @@ export default function AddCompany() {
                             size="small"
                             fullWidth={true}
                             value={company_name}
-                            onChange={(e) => setCompanyName(e.target.value)}
+                            onChange={(e) => {
+                                if (company_name !== '') {
+                                    document.querySelector('.errorname p').innerHTML = ''
+                                }
+                                setCompanyName(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 errorname" style={{ marginLeft: 200 }}><p></p></div>
                     <div className="cate-name">
                         <p>Type</p>
                         <div className="select">
@@ -114,9 +133,15 @@ export default function AddCompany() {
                             size="small"
                             fullWidth={true}
                             value={company_address}
-                            onChange={(e) => setCompanyAddress(e.target.value)}
+                            onChange={(e) => {
+                                if (company_address !== '') {
+                                    document.querySelector('.erroraddress p').innerHTML = ''
+                                }
+                                setCompanyAddress(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 erroraddress" style={{ marginLeft: 200 }}><p></p></div>
                     <div className="cate-name">
                         <p>Phone number</p>
                         <TextField
@@ -127,13 +152,19 @@ export default function AddCompany() {
                             fullWidth={true}
                             type="number"
                             value={company_phone}
-                            onChange={(e) => setCompanyPhone(e.target.value)}
+                            onChange={(e) => {
+                                if (company_phone !== '') {
+                                    document.querySelector('.errorphone p').innerHTML = ''
+                                }
+                                setCompanyPhone(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 errorphone" style={{ marginLeft: 200 }}><p></p></div>
                 </div>
                 <div className="group-button">
                     <Stack direction="row" spacing={2}>
-                        <Button variant="contained" startIcon={<AddIcon />} onClick={createCompany}>
+                        <Button disabled={isLoadingBtn} variant="contained" startIcon={<AddIcon />} onClick={createCompany}>
                             Thêm
                         </Button>
                         <Button variant="outlined" onClick={() => history.push('/admin/company')} endIcon={<ArrowBackIcon />}>

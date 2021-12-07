@@ -10,6 +10,8 @@ import { useHistory, useParams } from 'react-router';
 import DetailOrderItem from './DetailOrderItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import { toast, ToastContainer } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { editOrder } from '../../app/slice/orderSlice';
 export default function AcceptOrder() {
     const [order, setOrder] = useState({});
     const [detaiOrder, setDetailOrder] = useState([])
@@ -18,6 +20,8 @@ export default function AcceptOrder() {
     const [companies, setCompanies] = useState([])
     const [company, setCompany] = useState({})
     const [loading, setLoading] = useState(false)
+    const dispatch = useDispatch()
+    const [isLoadingBtn, setIsLoadingBtn] = useState(false)
     useEffect(() => {
         Aos.init({
         })
@@ -59,50 +63,69 @@ export default function AcceptOrder() {
         setCompany(value.value)
     }
     const acceptOrder = () => {
-        axios({
-            method: "PUT",
-            url: `http://localhost:8080/api/orders/accept/${params.id}`,
-            headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
-        })
-            .then(res => {
-                axios({
-                    method: "POST",
-                    url: `http://localhost:8080/api/pnhapxuat/addpx`,
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
-                    data: {
-                        iduser: localStorage.getItem('idUser'),
-                        idcompany: company.id
-                    }
-                }).then(res => {
-                    detaiOrder.forEach(item => {
-                        axios({
-                            method: "POST",
-                            url: `http://localhost:8080/api/ctpnhaps/add`,
-                            headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
-                            data: {
-                                quantity: item.detailQty,
-                                price: item.detailPrice,
-                                idproduct: item.product_id,
-                                idimport: res.data.data.nhapId
-                            }
-                        })
-                    })
-                }).then(() => {
-                    toast.success('Đã xác nhận đơn hàng', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        style: {
-                            background: "#fff",
-                            color: "#00ff14"
-                        }
-                    });
-                })
+        console.log(company)
+        if (Object.keys(company).length === 0) {
+            toast.warning('Vui lòng chọn đơn vị vận chuyển', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+
+            });
+        }
+        else {
+            setIsLoadingBtn(true)
+            axios({
+                method: "PUT",
+                url: `http://localhost:8080/api/orders/accept/${params.id}`,
+                headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
             })
+                .then(res => {
+                    const action = editOrder(res.data.data)
+                    dispatch(action)
+                    axios({
+                        method: "POST",
+                        url: `http://localhost:8080/api/pnhapxuat/addpx`,
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
+                        data: {
+                            iduser: localStorage.getItem('idUser'),
+                            idcompany: company.id
+                        }
+                    }).then(res => {
+                        detaiOrder.forEach(item => {
+                            axios({
+                                method: "POST",
+                                url: `http://localhost:8080/api/ctpnhaps/add`,
+                                headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
+                                data: {
+                                    quantity: item.detailQty,
+                                    price: item.detailPrice,
+                                    idproduct: item.product_id,
+                                    idimport: res.data.data.nhapId
+                                }
+                            })
+                        })
+                    }).then(() => {
+                        toast.success('Đã xác nhận đơn hàng', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            style: {
+                                background: "#fff",
+                                color: "#00ff14"
+                            }
+                        });
+                        setIsLoadingBtn(false)
+                    })
+                })
+        }
 
 
     }
@@ -162,7 +185,7 @@ export default function AcceptOrder() {
 
                         </div>
                         <div className="order-group-btn">
-                            <Button variant="contained" color="secondary" startIcon={<LocalShippingIcon />} sx={{ marginRight: 2 }} onClick={acceptOrder}>
+                            <Button disabled={isLoadingBtn} variant="contained" color="secondary" startIcon={<LocalShippingIcon />} sx={{ marginRight: 2 }} onClick={acceptOrder}>
                                 xác nhận
                             </Button>
                             <Button variant="outlined" endIcon={<ArrowBackIcon />} onClick={() => history.push('/admin/order')}>

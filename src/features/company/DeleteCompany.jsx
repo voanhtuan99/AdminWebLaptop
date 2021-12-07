@@ -15,6 +15,7 @@ export default function DeleteCompany() {
     const [company, setCompany] = useState({})
     const dispatch = useDispatch()
     const history = useHistory()
+    const [isLoadingBtn, setIsLoadingBtn] = useState(false)
     useEffect(() => {
         Aos.init({})
         axios({
@@ -27,6 +28,7 @@ export default function DeleteCompany() {
             })
     }, [])
     const delCompany = () => {
+        setIsLoadingBtn(true)
         axios({
             method: "DELETE",
             url: `http://localhost:8080/api/company/${params.id}`,
@@ -45,6 +47,7 @@ export default function DeleteCompany() {
                 });
                 const action = deleteCompany(params.id)
                 dispatch(action)
+                setIsLoadingBtn(false)
             })
             .catch(err => {
                 toast.error(`Xóa công ty thất bại`, {
@@ -56,6 +59,7 @@ export default function DeleteCompany() {
                     draggable: true,
                     progress: undefined,
                 });
+                setIsLoadingBtn(false)
             })
     }
     return (
@@ -69,7 +73,7 @@ export default function DeleteCompany() {
                 <div className="cate-name">Tên công ty: <strong>{company.company_name}</strong></div>
                 <div className="group-button">
                     <Stack direction="row" spacing={2}>
-                        <Button variant="contained" color="error" startIcon={<DeleteOutlineIcon />} onClick={delCompany}>
+                        <Button disabled={isLoadingBtn} variant="contained" color="error" startIcon={<DeleteOutlineIcon />} onClick={delCompany}>
                             Xóa
                         </Button>
                         <Button variant="outlined" onClick={() => history.push('/admin/company')} endIcon={<ArrowBackIcon />}>

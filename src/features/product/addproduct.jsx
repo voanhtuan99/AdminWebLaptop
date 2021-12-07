@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
+import CircularProgress from '@mui/material/CircularProgress';
 import 'react-toastify/dist/ReactToastify.css';
 export default function AddProduct() {
     const [images, setImages] = useState([])
@@ -20,6 +21,7 @@ export default function AddProduct() {
     const [cate, setCate] = useState('')
     const [brand, setBrand] = useState('')
     const [product_description, setproduct_description] = useState('')
+    const [isLoadingEdit, setIsLoadingEdit] = useState(false)
     const onChange1 = async e => {
         const files = e.target.files
         const data = new FormData()
@@ -119,12 +121,21 @@ export default function AddProduct() {
         })
     }, [])
     const handleChangeName = (e) => {
+        if (product_name !== '') {
+            document.querySelector('.errorname p').innerHTML = ''
+        }
         setProduct_name(e.target.value)
     }
     const handleChangePrice = (e) => {
+        if (product_price !== '') {
+            document.querySelector('.errorprice p').innerHTML = ''
+        }
         setProduct_price(e.target.value)
     }
     const handleChangeDiscount = (e) => {
+        if (product_discount !== '') {
+            document.querySelector('.errordiscount p').innerHTML = ''
+        }
         setproduct_discount(e.target.value)
     }
     const handleChangeCate = (e) => {
@@ -134,16 +145,42 @@ export default function AddProduct() {
         setBrand(e.target.value)
     }
     const handleChangeDescription = (e) => {
+        if (product_description !== '') {
+            document.querySelector('.errordesc p').innerHTML = ''
+        }
         setproduct_description(e.target.value)
     }
     const addNewProduct = () => {
-
         let imgDTOS = images.map(item => {
             return {
                 imageLink: item
             }
         })
-        if (product_name !== '' && product_price !== 0 && product_discount !== '' && product_description !== '') {
+        if (product_name === '') {
+            document.querySelector('.errorname p').innerHTML = 'Tên sản phẩm không được để trống'
+        }
+        if (product_price === '') {
+            document.querySelector('.errorprice p').innerHTML = 'Giá không được để trống'
+        }
+        if (product_discount === '') {
+            document.querySelector('.errordiscount p').innerHTML = 'Giá giảm không được để trống'
+        }
+        if (product_description === '') {
+            document.querySelector('.errordesc p').innerHTML = 'Mô tả không được để trống'
+        }
+        if (imgDTOS.length === 0) {
+            toast.warning('Vui lòng chọn ít nhất 1 ảnh', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+        if (product_name !== '' && product_price !== 0 && product_discount !== '' && product_description !== '' && imgDTOS.length !== 0) {
+            setIsLoadingEdit(true)
             axios({
                 method: "POST",
                 url: "http://localhost:8080/api/product/add",
@@ -174,7 +211,7 @@ export default function AddProduct() {
 
                 // })
                 .then(() => {
-                    toast.success('🦄 Wow so easy!', {
+                    toast.success('Thêm sản phẩm thành công', {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -184,13 +221,14 @@ export default function AddProduct() {
                         progress: undefined,
                     });
                 })
+            setIsLoadingEdit(false)
         }
     }
     const history = useHistory()
-    console.log(images)
     return (
         <div className="overlays1">
             <ToastContainer />
+            {isLoadingEdit === true ? <div className="overlays3"><CircularProgress sx={{ color: "blue" }} /></div> : <></>}
             <div className="form addproduct" data-aos="zoom-up" data-aos-duration="800">
                 <h1 className="title addproduct__title">Thêm sản phẩm mới</h1>
                 <div className="contentall addproduct__content">
@@ -199,18 +237,18 @@ export default function AddProduct() {
                             <p>Tên sản phẩm</p>
                             <input type="text" placeholder="Nhập tên sản phẩm" onChange={handleChangeName} value={product_name} />
                         </div>
-                        <div className="error"></div>
+                        <div className="error1 errorname"><p></p></div>
                         <div className="content">
                             <p>Giá</p>
                             <input type="number" placeholder="Nhập tên sản phẩm" onChange={handleChangePrice} value={product_price} />
                         </div>
-                        <div className="error"></div>
+                        <div className="error1 errorprice"><p></p></div>
 
                         <div className="content">
                             <p>Khuyến mãi</p>
                             <input type="number" placeholder="Nhập tên sản phẩm" onChange={handleChangeDiscount} value={product_discount} />
                         </div>
-                        <div className="error"></div>
+                        <div className="error1 errordiscount"><p></p></div>
                         <div className="content">
                             <p>Loại sản phẩm</p>
                             <select name="category" id="category" onChange={handleChangeCate} value={cate}>
@@ -219,7 +257,7 @@ export default function AddProduct() {
                                 })}
                             </select>
                         </div>
-                        <div className="error"></div>
+                        <div className="error1 errorcate"><p></p></div>
                         <div className="content">
                             <p>Hãng</p>
                             <select name="category" id="category" onChange={handleChangeBrand} value={brand}>
@@ -228,12 +266,12 @@ export default function AddProduct() {
                                 })}
                             </select>
                         </div>
-                        <div className="error"></div>
+                        <div className="error1 errorbrand"></div>
                         <div className="content">
                             <p>Mô tả</p>
                             <textarea type="text" placeholder="Mô tả" onChange={handleChangeDescription} value={product_description} />
                         </div>
-                        <div className="error"></div>
+                        <div className="error1 errordesc"><p></p></div>
 
                     </div>
                     <div className="group-image">

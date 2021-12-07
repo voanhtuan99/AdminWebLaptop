@@ -7,10 +7,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 import { useHistory, useParams } from 'react-router';
 import { toast, ToastContainer } from 'react-toastify';
+import { editOrder } from '../../app/slice/orderSlice';
+import { useDispatch } from 'react-redux';
 export default function CancelOrder() {
     const params = useParams()
     const history = useHistory()
     const [order, setOrder] = useState({});
+    const dispatch = useDispatch()
     useEffect(() => {
         Aos.init({
         })
@@ -29,7 +32,9 @@ export default function CancelOrder() {
             url: `http://localhost:8080/api/orders/cancel/${params.id}`,
             headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
         })
-            .then(res => {
+            .then(() => {
+                const action = editOrder
+                dispatch(action)
                 toast.success(`Đã hủy đơn hàng`, {
                     position: "top-right",
                     autoClose: 5000,

@@ -17,39 +17,56 @@ export default function AddUser() {
     const [address, setAddress] = useState('')
     const dispatch = useDispatch()
     const createUser = () => {
-        axios({
-            method: "POST",
-            url: `http://localhost:8080/api/auth/signup`,
-            headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
-            data: {
-                email,
-                password,
-                username: name,
-                phone: sdt,
-                address,
-                role: 'admin'
-            }
-        }).then(() => {
-            toast.success(`Thêm tài khoản ${email} thành công`, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-        }).then(() => {
+        if (email === '') {
+            document.querySelector('.erroremail p').innerHTML = 'Email không được để trống'
+        }
+        if (password === '') {
+            document.querySelector('.errorpass p').innerHTML = 'Password không được để trống'
+        }
+        if (name === '') {
+            document.querySelector('.errorname p').innerHTML = 'Tên không được để trống'
+        }
+        if (sdt === '') {
+            document.querySelector('.errorsdt p').innerHTML = 'Số điện thoại không được để trống'
+        }
+        if (address === '') {
+            document.querySelector('.erroraddress p').innerHTML = 'Địa chỉ không được để trống'
+        }
+        if (email !== '' && password !== '' && name !== '' && sdt !== '' && address !== '') {
             axios({
-                method: "GET",
-                url: `http://localhost:8080/api/user/`,
-                headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` }
-            })
-                .then(res => {
-                    const action = getAllUser(res.data)
-                    dispatch(action)
+                method: "POST",
+                url: `http://localhost:8080/api/auth/signup`,
+                headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
+                data: {
+                    email,
+                    password,
+                    username: name,
+                    phone: sdt,
+                    address,
+                    role: 'admin'
+                }
+            }).then(() => {
+                toast.success(`Thêm tài khoản ${email} thành công`, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }).then(() => {
+                axios({
+                    method: "GET",
+                    url: `http://localhost:8080/api/user/`,
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` }
                 })
-        })
+                    .then(res => {
+                        const action = getAllUser(res.data)
+                        dispatch(action)
+                    })
+            })
+        }
     }
     return (
         <div className="overlays1">
@@ -67,9 +84,15 @@ export default function AddUser() {
                             fullWidth={true}
                             type="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => {
+                                if (email !== '') {
+                                    document.querySelector('.erroremail p').innerHTML = ''
+                                }
+                                setEmail(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 erroremail" style={{ marginLeft: 200 }}><p></p></div>
                     <div className="cate-name">
                         <p>Mật khẩu</p>
                         <TextField
@@ -80,9 +103,15 @@ export default function AddUser() {
                             fullWidth={true}
                             type="password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {
+                                if (password !== '') {
+                                    document.querySelector('.errorpass p').innerHTML = ''
+                                }
+                                setPassword(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 errorpass" style={{ marginLeft: 200 }}><p></p></div>
                     <div className="cate-name">
                         <p>Tên</p>
                         <TextField
@@ -93,9 +122,15 @@ export default function AddUser() {
                             size="small"
                             fullWidth={true}
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => {
+                                if (name !== '') {
+                                    document.querySelector('.errorname p').innerHTML = ''
+                                }
+                                setName(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 errorname" style={{ marginLeft: 200 }}><p></p></div>
                     <div className="cate-name">
                         <p>SĐT</p>
                         <TextField
@@ -106,9 +141,15 @@ export default function AddUser() {
                             size="small"
                             fullWidth={true}
                             value={sdt}
-                            onChange={(e) => setSdt(e.target.value)}
+                            onChange={(e) => {
+                                if (sdt !== '') {
+                                    document.querySelector('.errorsdt p').innerHTML = ''
+                                }
+                                setSdt(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 errorsdt" style={{ marginLeft: 200 }}><p></p></div>
                     <div className="cate-name">
                         <p>Địa chỉ</p>
                         <TextField
@@ -119,9 +160,15 @@ export default function AddUser() {
                             fullWidth={true}
                             type="text"
                             value={address}
-                            onChange={(e) => setAddress(e.target.value)}
+                            onChange={(e) => {
+                                if (address !== '') {
+                                    document.querySelector('.erroraddress p').innerHTML = ''
+                                }
+                                setAddress(e.target.value)
+                            }}
                         />
                     </div>
+                    <div className="error1 erroraddress" style={{ marginLeft: 200 }}><p></p></div>
                     <div className="group-button">
                         <Stack direction="row" spacing={2}>
                             <Button variant="contained" startIcon={<AddIcon />} onClick={createUser}>

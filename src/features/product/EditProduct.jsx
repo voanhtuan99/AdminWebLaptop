@@ -7,9 +7,13 @@ import { useState } from 'react';
 import Aos from 'aos'
 import { useEffect } from 'react'
 import './style.scss'
+import './error.scss'
 import { useHistory, useParams } from 'react-router'
 import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useDispatch } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
+import { updateProduct } from '../../app/slice/productSlice';
 export default function EditProduct() {
     const [product_name, setProduct_name] = useState('')
     const [product_price, setProduct_price] = useState(0)
@@ -22,6 +26,8 @@ export default function EditProduct() {
     const [product_description, setProduct_description] = useState('')
     const params = useParams()
     const [loading, setLoading] = useState(false)
+    const dispatch = useDispatch()
+    const [isLoadingEdit, setIsLoadingEdit] = useState(false)
     useEffect(() => {
         Aos.init({
         })
@@ -58,33 +64,65 @@ export default function EditProduct() {
 
     }, [])
     const editProduct = () => {
-        axios({
-            method: "PUT",
-            url: `http://localhost:8080/api/product/put/${params.id}`,
-            headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
-            data: {
-                product_name,
-                product_price,
-                product_qty: product_quantity,
-                product_discount,
-                product_description,
-                category_id: cate,
-                brand_id: brand
-            }
-        }).then(() => {
-            alert("thanh cong")
-        })
+        if (product_name === '') {
+            document.querySelector('.errorname p').innerHTML = 'Tên sản phẩm không được để trống'
+        }
+        if (product_price === '') {
+            document.querySelector('.errorprice p').innerHTML = 'Giá không được để trống'
+        }
+        if (product_discount === '') {
+            document.querySelector('.errordiscount p').innerHTML = 'Giá giảm không được để trống'
+        }
+        if (product_description === '') {
+            document.querySelector('.errordesc p').innerHTML = 'Mô tả không được để trống'
+        }
+        if (product_quantity === '') {
+            document.querySelector('.errorqty p').innerHTML = 'Số lượng không được để trống'
+        }
+        if (product_name !== '' && product_price !== 0 && product_discount !== '' && product_description !== '' && product_quantity !== '') {
+            setIsLoadingEdit(true)
+            axios({
+                method: "PUT",
+                url: `http://localhost:8080/api/product/put/${params.id}`,
+                headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
+                data: {
+                    product_name,
+                    product_price,
+                    product_qty: product_quantity,
+                    product_discount,
+                    product_description,
+                    category_id: cate,
+                    brand_id: brand
+                }
+            }).then((res) => {
+                const action = updateProduct(res.data.data)
+                dispatch(action)
+                toast.success(`Thêm sản phẩm thành công`, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                setIsLoadingEdit(false)
+            })
+        }
     }
     const history = useHistory()
     return (
         <div className="overlays1">
+            <ToastContainer />
+
             {loading ?
                 <div className="loading-page">
                     <CircularProgress sx={{ color: "white" }} />
                 </div> :
                 <div className="form edit-product">
-
+                    {isLoadingEdit === true ? <div className="overlays3"><CircularProgress sx={{ color: "blue" }} /></div> : <></>}
                     <h1 className="title addproduct__title">Update sản phẩm</h1>
+
                     <div className="contentall edit-product-content">
                         <div className="description">
                             <div className="content">
@@ -96,9 +134,15 @@ export default function EditProduct() {
                                     size="small"
                                     fullWidth={true}
                                     value={product_name}
-                                    onChange={(e) => setProduct_name(e.target.value)}
+                                    onChange={(e) => {
+                                        if (product_name !== '') {
+                                            document.querySelector('.errorname p').innerHTML = ''
+                                        }
+                                        setProduct_name(e.target.value)
+                                    }}
                                 />
                             </div>
+                            <div className="error1 errorname"><p></p></div>
                             <div className="content">
                                 <p>Số lượng</p>
                                 <TextField
@@ -109,9 +153,15 @@ export default function EditProduct() {
                                     fullWidth={true}
                                     type="number"
                                     value={product_quantity}
-                                    onChange={(e) => setProduct_quantity(e.target.value)}
+                                    onChange={(e) => {
+                                        if (product_quantity !== '') {
+                                            document.querySelector('.errorqty p').innerHTML = ''
+                                        }
+                                        setProduct_quantity(e.target.value)
+                                    }}
                                 />
                             </div>
+                            <div className="error1 errorqty"><p></p></div>
                             <div className="content">
                                 <p>Đơn giá</p>
                                 <TextField
@@ -122,9 +172,15 @@ export default function EditProduct() {
                                     fullWidth={true}
                                     type="number"
                                     value={product_price}
-                                    onChange={(e) => setProduct_price(e.target.value)}
+                                    onChange={(e) => {
+                                        if (product_price !== '') {
+                                            document.querySelector('.errorprice p').innerHTML = ''
+                                        }
+                                        setProduct_price(e.target.value)
+                                    }}
                                 />
                             </div>
+                            <div className="error1 errorprice"><p></p></div>
                             <div className="content">
                                 <p>Khuyến mãi</p>
                                 <TextField
@@ -135,9 +191,15 @@ export default function EditProduct() {
                                     fullWidth={true}
                                     type="number"
                                     value={product_discount}
-                                    onChange={(e) => setProduct_discount(e.target.value)}
+                                    onChange={(e) => {
+                                        if (product_discount !== '') {
+                                            document.querySelector('.errordiscount p').innerHTML = ''
+                                        }
+                                        setProduct_discount(e.target.value)
+                                    }}
                                 />
                             </div>
+                            <div className="error1 errordiscount"><p></p></div>
                             <div className="content">
                                 <p>Loại SP</p>
                                 <FormControl sx={{ m: 1, minWidth: 405, height: 40 }} className="select-type">
@@ -187,9 +249,15 @@ export default function EditProduct() {
                                     rows={3}
                                     sx={{ width: '58ch' }}
                                     value={product_description}
-                                    onChange={(e) => setProduct_description(e.target.value)}
+                                    onChange={(e) => {
+                                        setProduct_description(e.target.value)
+                                        if (product_description !== '') {
+                                            document.querySelector('.errordesc p').innerHTML = ''
+                                        }
+                                    }}
                                 />
                             </div>
+                            <div className="error1 errordesc"><p></p></div>
                         </div>
                     </div>
                     <div className="groupbtn addproduct">

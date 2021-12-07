@@ -15,6 +15,7 @@ export default function DeleteBrand() {
     const [brand, setBrand] = useState('')
     const dispatch = useDispatch()
     const history = useHistory()
+    const [isLoadingBtn, setIsLoadingBtn] = useState(false)
     useEffect(() => {
         Aos.init({})
         axios({
@@ -26,6 +27,7 @@ export default function DeleteBrand() {
             })
     }, [])
     const delBrand = () => {
+        setIsLoadingBtn(true)
         axios({
             method: "DELETE",
             url: `http://localhost:8080/api/brand/brand/${params.id}`,
@@ -43,6 +45,7 @@ export default function DeleteBrand() {
                 });
                 const action = deleteBrand(params.id)
                 dispatch(action)
+                setIsLoadingBtn(false)
             })
             .catch(err => {
                 toast.error(`Xóa hãng thất bại`, {
@@ -54,6 +57,7 @@ export default function DeleteBrand() {
                     draggable: true,
                     progress: undefined,
                 });
+                setIsLoadingBtn(false)
             })
     }
     return (
@@ -67,7 +71,7 @@ export default function DeleteBrand() {
                 <div className="cate-name">Tên loại: <strong>{brand.brand_name}</strong></div>
                 <div className="group-button">
                     <Stack direction="row" spacing={2}>
-                        <Button variant="contained" color="error" startIcon={<DeleteOutlineIcon />} onClick={delBrand}>
+                        <Button disabled={isLoadingBtn} variant="contained" color="error" startIcon={<DeleteOutlineIcon />} onClick={delBrand}>
                             Xóa
                         </Button>
                         <Button variant="outlined" onClick={() => history.push('/admin/brand')} endIcon={<ArrowBackIcon />}>

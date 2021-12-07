@@ -1,15 +1,18 @@
 import Aos from 'aos'
 import axios from 'axios'
 import { MDBDataTableV5 } from 'mdbreact'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { getAllUser } from '../../app/slice/userSlice'
+import CircularProgress from '@mui/material/CircularProgress';
 export default function Users() {
     const dispatch = useDispatch()
+    const [loading, setLoading] = useState(false)
     useEffect(() => {
         Aos.init({
         })
+        setLoading(true)
         axios({
             method: "GET",
             url: `http://localhost:8080/api/user/`,
@@ -18,6 +21,9 @@ export default function Users() {
             .then(res => {
                 const action = getAllUser(res.data)
                 dispatch(action)
+            })
+            .then(() => {
+                setLoading(false)
             })
     }, [])
     const listUser = useSelector(state => state.user)
@@ -104,13 +110,17 @@ export default function Users() {
                     <Link to="/admin/users/add"><button className="addproduct"><i className="fas fa-plus"></i>Thêm tài khoản</button></Link>
                 </div>
                 <div className="list">
-                    <MDBDataTableV5
-                        data={user()}
-                        className="px-3"
-                        hover
-                        searchTop
-                        searchBottom={false}
-                    />
+                    {loading ?
+                        <div className="loading-page">
+                            <CircularProgress sx={{ color: "#73b6f8" }} />
+                        </div> :
+                        <MDBDataTableV5
+                            data={user()}
+                            className="px-3"
+                            hover
+                            searchTop
+                            searchBottom={false}
+                        />}
                 </div>
             </div>
         </div>

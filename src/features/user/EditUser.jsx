@@ -45,42 +45,59 @@ export default function EditUser() {
     }, [])
     const editUser = () => {
         setDisableBtn(true)
-        axios({
-            method: "PUT",
-            url: `http://localhost:8080/api/user/${id}`,
-            headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
-            data: {
-                name: name,
-                password: password,
-                email,
-                phone_number: sdt,
-                address,
-                role: role,
-                activestatus
-            }
-        })
-            .then(() => {
-                axios({
-                    method: "GET",
-                    url: `http://localhost:8080/api/user/`,
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` }
-                })
-                    .then(res => {
-                        const action = getAllUser(res.data)
-                        dispatch(action)
-                    })
-            }).then(() => {
-                setDisableBtn(false)
-                toast.success('Sửa thông tin thành công', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
+        if (email === '') {
+            document.querySelector('.erroremail p').innerHTML = 'Email không được để trống'
+        }
+        if (password === '') {
+            document.querySelector('.errorpass p').innerHTML = 'Password không được để trống'
+        }
+        if (name === '') {
+            document.querySelector('.errorname p').innerHTML = 'Tên không được để trống'
+        }
+        if (sdt === '') {
+            document.querySelector('.errorsdt p').innerHTML = 'Số điện thoại không được để trống'
+        }
+        if (address === '') {
+            document.querySelector('.erroraddress p').innerHTML = 'Địa chỉ không được để trống'
+        }
+        if (email !== '' && password !== '' && name !== '' && sdt !== '' && address !== '') {
+            axios({
+                method: "PUT",
+                url: `http://localhost:8080/api/user/${id}`,
+                headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` },
+                data: {
+                    name: name,
+                    password: password,
+                    email,
+                    phone_number: sdt,
+                    address,
+                    role: role,
+                    activestatus
+                }
             })
+                .then(() => {
+                    axios({
+                        method: "GET",
+                        url: `http://localhost:8080/api/user/`,
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem("accessToken")}` }
+                    })
+                        .then(res => {
+                            const action = getAllUser(res.data)
+                            dispatch(action)
+                        })
+                }).then(() => {
+                    setDisableBtn(false)
+                    toast.success('Sửa thông tin thành công', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                })
+        }
     }
     return (
         <div className="overlays1">
@@ -105,6 +122,7 @@ export default function EditUser() {
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
+                            <div className="error1 erroremail" style={{ marginLeft: 200 }}><p></p></div>
                             <div className="cate-name">
                                 <p>Mật khẩu</p>
                                 <TextField
@@ -119,6 +137,7 @@ export default function EditUser() {
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                             </div>
+                            <div className="error1 errorpass" style={{ marginLeft: 200 }}><p></p></div>
                             <div className="cate-name">
                                 <p>Tên</p>
                                 <TextField
@@ -132,6 +151,7 @@ export default function EditUser() {
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </div>
+                            <div className="error1 errorname" style={{ marginLeft: 200 }}><p></p></div>
                             <div className="cate-name">
                                 <p>SĐT</p>
                                 <TextField
@@ -145,6 +165,7 @@ export default function EditUser() {
                                     onChange={(e) => setSdt(e.target.value)}
                                 />
                             </div>
+                            <div className="error1 errorsdt" style={{ marginLeft: 200 }}><p></p></div>
                             <div className="cate-name">
                                 <p>Địa chỉ</p>
                                 <TextField
@@ -158,6 +179,7 @@ export default function EditUser() {
                                     onChange={(e) => setAddress(e.target.value)}
                                 />
                             </div>
+                            <div className="error1 erroraddress" style={{ marginLeft: 200 }}><p></p></div>
                             <div className="group-button">
                                 <Stack direction="row" spacing={2}>
                                     <Button variant="contained" startIcon={<SaveIcon />} onClick={editUser} disabled={disableBtn}>
