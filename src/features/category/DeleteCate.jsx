@@ -10,20 +10,26 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { deleteCategory } from '../../app/slice/categorySlice';
+import { CircularProgress } from '@mui/material';
 export default function DeleteCate() {
     const params = useParams()
     const [cate, setCate] = useState('')
     const dispatch = useDispatch()
     const history = useHistory()
     const [isLoadingBtn, setIsLoadingBtn] = useState(false)
+    const [loading, setLoading] = useState(false)
     useEffect(() => {
         Aos.init({})
+        setLoading(true)
         axios({
             method: "GET",
             url: `http://localhost:8080/api/category/${params.id}`,
         })
             .then(res => {
                 setCate(res.data.data)
+            })
+            .then(() => {
+                setLoading(false)
             })
     }, [])
     const deleteCate = () => {
@@ -65,21 +71,26 @@ export default function DeleteCate() {
         <div className="overlays1">
             <ToastContainer />
             <div className="form delete-category" data-aos="fade-up">
-                <div className="title">
-                    <h2>Delete Category</h2>
-                    <div className="logo"><i className="far fa-trash-alt"></i></div>
-                </div>
-                <div className="cate-name">Tên loại: <strong>{cate.category_name}</strong></div>
-                <div className="group-button">
-                    <Stack direction="row" spacing={2}>
-                        <Button disabled={isLoadingBtn} variant="contained" color="error" startIcon={<DeleteOutlineIcon />} onClick={deleteCate}>
-                            Xóa
-                        </Button>
-                        <Button variant="outlined" onClick={() => history.push('/admin/category')} endIcon={<ArrowBackIcon />}>
-                            Thoát
-                        </Button>
-                    </Stack>
-                </div>
+                {loading ?
+                    <div className="loading-page">
+                        <CircularProgress sx={{ color: "#73b6f8" }} />
+                    </div> :
+                    <>
+                        <div className="title">
+                            <h2>Delete Category</h2>
+                            <div className="logo"><i className="far fa-trash-alt"></i></div>
+                        </div>
+                        <div className="cate-name">Tên loại: <strong>{cate.category_name}</strong></div>
+                        <div className="group-button">
+                            <Stack direction="row" spacing={2}>
+                                <Button disabled={isLoadingBtn} variant="contained" color="error" startIcon={<DeleteOutlineIcon />} onClick={deleteCate}>
+                                    Xóa
+                                </Button>
+                                <Button variant="outlined" onClick={() => history.push('/admin/category')} endIcon={<ArrowBackIcon />}>
+                                    Thoát
+                                </Button>
+                            </Stack>
+                        </div></>}
             </div>
         </div>
     )

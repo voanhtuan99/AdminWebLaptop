@@ -70,7 +70,7 @@ export default function ProductPage() {
             data.rows.push({
                 id: item.id,
                 product_name: item.product_name,
-                product_price: item.product_price,
+                product_price: <strong>{new Intl.NumberFormat().format(item.product_price)}đ</strong>,
                 product_qty: item.product_qty,
                 product_discount: item.product_discount,
                 actions: <div className="handle-product" >

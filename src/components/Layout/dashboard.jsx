@@ -256,7 +256,7 @@ export default function Dashboard() {
             data.rows.push({
                 id: index + 1,
                 productName: <strong>{item.productName}</strong>,
-                priceSold: <div className="text-blue">{item.priceSold}</div>,
+                priceSold: <div className="text-blue">{new Intl.NumberFormat().format(item.priceSold)}đ</div>,
 
             })
         })
@@ -311,11 +311,11 @@ export default function Dashboard() {
                     <div className="thongke1">
                         <div className="banthongke tiennhap" data-aos="fade-up" data-aos-duration="500">
                             <h3>Tiền nhập</h3>
-                            <p>{tke.tienNhap}đ</p>
+                            <p>{new Intl.NumberFormat().format(tke.tienNhap)}đ</p>
                         </div>
                         <div className="banthongke tienxuat" data-aos="fade-up" data-aos-duration="600">
                             <h3>Tiền xuất</h3>
-                            <p>{tke.tienXuat}đ</p>
+                            <p>{new Intl.NumberFormat().format(tke.tienXuat)}đ</p>
                         </div>
 
                         <div className="banthongke soluongnhap" data-aos="fade-up" data-aos-duration="500">
@@ -328,7 +328,7 @@ export default function Dashboard() {
                         </div>
                         <div className="banthongke tienloi" data-aos="fade-up" data-aos-duration="500">
                             <h3>Tiền lời</h3>
-                            <p>{tke.tienLoi}đ</p>
+                            <p>{new Intl.NumberFormat().format(tke.tienLoi)}đ</p>
                         </div>
                     </div>
                     <div className="thongke2">

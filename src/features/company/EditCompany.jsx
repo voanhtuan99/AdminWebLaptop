@@ -10,7 +10,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { useHistory, useParams } from 'react-router';
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { CircularProgress, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { addCompany, editCompany } from '../../app/slice/companySlice';
 export default function EditCompany() {
     const [company_name, setCompanyName] = useState('')
@@ -21,9 +21,11 @@ export default function EditCompany() {
     const history = useHistory()
     const params = useParams()
     const [isLoadingBtn, setIsLoadingBtn] = useState(false)
+    const [loading, setLoading] = useState(false)
     useEffect(() => {
         Aos.init({
         })
+        setLoading(true)
         axios({
             method: "GET",
             url: `http://localhost:8080/api/company/${params.id}`,
@@ -34,6 +36,9 @@ export default function EditCompany() {
                 setCompanyType(res.data.data.company_type)
                 setCompanyAddress(res.data.data.company_address)
                 setCompanyPhone(res.data.data.company_phone)
+            })
+            .then(() => {
+                setLoading(false)
             })
     }, [])
     const updateCompany = () => {
@@ -96,95 +101,99 @@ export default function EditCompany() {
 
             <ToastContainer />
             <div className="form add-company" data-aos="zoom-up" data-aos-duration="800">
-                <h1 className="title add-cate">CREATE COMPANY</h1>
-                <div className="content">
-                    <div className="cate-name">
-                        <p>Name</p>
-                        <TextField
-                            label="Tên công ty"
-                            id="outlined-size-small"
-                            // defaultValue="Small"
-                            size="small"
-                            fullWidth={true}
-                            value={company_name}
-                            onChange={(e) => {
-                                if (company_name !== '') {
-                                    document.querySelector('.errorname p').innerHTML = ''
-                                }
-                                setCompanyName(e.target.value)
-                            }}
-                        />
-                    </div>
-                    <div className="error1 errorname" style={{ marginLeft: 200 }}><p></p></div>
-                    <div className="cate-name">
-                        <p>Type</p>
-                        <div className="select">
-                            <FormControl sx={{ m: 1, minWidth: 405 }}>
-                                <InputLabel id="demo-simple-select-helper-label">Hãng</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-helper-label"
-                                    id="demo-simple-select-helper"
-                                    value={company_type}
-                                    label="Hãng"
-                                    onChange={handleChange}
-                                >
-                                    <MenuItem value="">
-                                        <em>None</em>
-                                    </MenuItem>
-                                    <MenuItem value="Nhà phân phối">Nhà phân phối</MenuItem>
-                                    <MenuItem value="Vận chuyển">Vận chuyển</MenuItem>
-                                </Select>
-                            </FormControl>
+                {loading ?
+                    <div className="loading-page">
+                        <CircularProgress sx={{ color: "#73b6f8" }} />
+                    </div> : <>
+                        <h1 className="title add-cate">CREATE COMPANY</h1>
+                        <div className="content">
+                            <div className="cate-name">
+                                <p>Name</p>
+                                <TextField
+                                    label="Tên công ty"
+                                    id="outlined-size-small"
+                                    // defaultValue="Small"
+                                    size="small"
+                                    fullWidth={true}
+                                    value={company_name}
+                                    onChange={(e) => {
+                                        if (company_name !== '') {
+                                            document.querySelector('.errorname p').innerHTML = ''
+                                        }
+                                        setCompanyName(e.target.value)
+                                    }}
+                                />
+                            </div>
+                            <div className="error1 errorname" style={{ marginLeft: 200 }}><p></p></div>
+                            <div className="cate-name">
+                                <p>Type</p>
+                                <div className="select">
+                                    <FormControl sx={{ m: 1, minWidth: 405 }}>
+                                        <InputLabel id="demo-simple-select-helper-label">Hãng</InputLabel>
+                                        <Select
+                                            labelId="demo-simple-select-helper-label"
+                                            id="demo-simple-select-helper"
+                                            value={company_type}
+                                            label="Hãng"
+                                            onChange={handleChange}
+                                        >
+                                            <MenuItem value="">
+                                                <em>None</em>
+                                            </MenuItem>
+                                            <MenuItem value="Nhà phân phối">Nhà phân phối</MenuItem>
+                                            <MenuItem value="Vận chuyển">Vận chuyển</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                            </div>
+                            <div className="cate-name">
+                                <p>Address</p>
+                                <TextField
+                                    label="Địa chỉ"
+                                    id="outlined-size-small"
+                                    // defaultValue="Small"
+                                    size="small"
+                                    fullWidth={true}
+                                    value={company_address}
+                                    onChange={(e) => {
+                                        if (company_address !== '') {
+                                            document.querySelector('.erroraddress p').innerHTML = ''
+                                        }
+                                        setCompanyAddress(e.target.value)
+                                    }}
+                                />
+                            </div>
+                            <div className="error1 erroraddress" style={{ marginLeft: 200 }}><p></p></div>
+                            <div className="cate-name">
+                                <p>Phone number</p>
+                                <TextField
+                                    label="Số điện thoại"
+                                    id="outlined-size-small"
+                                    // defaultValue="Small"
+                                    size="small"
+                                    fullWidth={true}
+                                    type="number"
+                                    value={company_phone}
+                                    onChange={(e) => {
+                                        if (company_phone !== '') {
+                                            document.querySelector('.errorphone p').innerHTML = ''
+                                        }
+                                        setCompanyPhone(e.target.value)
+                                    }}
+                                />
+                            </div>
+                            <div className="error1 errorphone" style={{ marginLeft: 200 }}><p></p></div>
                         </div>
-                    </div>
-                    <div className="cate-name">
-                        <p>Address</p>
-                        <TextField
-                            label="Địa chỉ"
-                            id="outlined-size-small"
-                            // defaultValue="Small"
-                            size="small"
-                            fullWidth={true}
-                            value={company_address}
-                            onChange={(e) => {
-                                if (company_address !== '') {
-                                    document.querySelector('.erroraddress p').innerHTML = ''
-                                }
-                                setCompanyAddress(e.target.value)
-                            }}
-                        />
-                    </div>
-                    <div className="error1 erroraddress" style={{ marginLeft: 200 }}><p></p></div>
-                    <div className="cate-name">
-                        <p>Phone number</p>
-                        <TextField
-                            label="Số điện thoại"
-                            id="outlined-size-small"
-                            // defaultValue="Small"
-                            size="small"
-                            fullWidth={true}
-                            type="number"
-                            value={company_phone}
-                            onChange={(e) => {
-                                if (company_phone !== '') {
-                                    document.querySelector('.errorphone p').innerHTML = ''
-                                }
-                                setCompanyPhone(e.target.value)
-                            }}
-                        />
-                    </div>
-                    <div className="error1 errorphone" style={{ marginLeft: 200 }}><p></p></div>
-                </div>
-                <div className="group-button">
-                    <Stack direction="row" spacing={2}>
-                        <Button disabled={isLoadingBtn} variant="contained" startIcon={<SaveIcon />} onClick={updateCompany}>
-                            Cập nhật
-                        </Button>
-                        <Button variant="outlined" onClick={() => history.push('/admin/company')} endIcon={<ArrowBackIcon />}>
-                            Thoát
-                        </Button>
-                    </Stack>
-                </div>
+                        <div className="group-button">
+                            <Stack direction="row" spacing={2}>
+                                <Button disabled={isLoadingBtn} variant="contained" startIcon={<SaveIcon />} onClick={updateCompany}>
+                                    Cập nhật
+                                </Button>
+                                <Button variant="outlined" onClick={() => history.push('/admin/company')} endIcon={<ArrowBackIcon />}>
+                                    Thoát
+                                </Button>
+                            </Stack>
+                        </div></>}
             </div>
         </div>
     )

@@ -10,20 +10,26 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { deleteBrand } from '../../app/slice/brandSlice';
+import { CircularProgress } from '@mui/material';
 export default function DeleteBrand() {
     const params = useParams()
     const [brand, setBrand] = useState('')
     const dispatch = useDispatch()
     const history = useHistory()
     const [isLoadingBtn, setIsLoadingBtn] = useState(false)
+    const [loading, setLoading] = useState(false)
     useEffect(() => {
         Aos.init({})
+        setLoading(true)
         axios({
             method: "GET",
             url: `http://localhost:8080/api/brand/${params.id}`,
         })
             .then(res => {
                 setBrand(res.data.data)
+            })
+            .then(() => {
+                setLoading(false)
             })
     }, [])
     const delBrand = () => {
@@ -64,21 +70,26 @@ export default function DeleteBrand() {
         <div className="overlays1">
             <ToastContainer />
             <div className="form delete-category" data-aos="fade-up">
-                <div className="title">
-                    <h2>Delete Category</h2>
-                    <div className="logo"><i className="far fa-trash-alt"></i></div>
-                </div>
-                <div className="cate-name">Tên loại: <strong>{brand.brand_name}</strong></div>
-                <div className="group-button">
-                    <Stack direction="row" spacing={2}>
-                        <Button disabled={isLoadingBtn} variant="contained" color="error" startIcon={<DeleteOutlineIcon />} onClick={delBrand}>
-                            Xóa
-                        </Button>
-                        <Button variant="outlined" onClick={() => history.push('/admin/brand')} endIcon={<ArrowBackIcon />}>
-                            Thoát
-                        </Button>
-                    </Stack>
-                </div>
+                {loading ?
+                    <div className="loading-page">
+                        <CircularProgress sx={{ color: "#73b6f8" }} />
+                    </div> :
+                    <>
+                        <div className="title">
+                            <h2>Delete Category</h2>
+                            <div className="logo"><i className="far fa-trash-alt"></i></div>
+                        </div>
+                        <div className="cate-name">Tên loại: <strong>{brand.brand_name}</strong></div>
+                        <div className="group-button">
+                            <Stack direction="row" spacing={2}>
+                                <Button disabled={isLoadingBtn} variant="contained" color="error" startIcon={<DeleteOutlineIcon />} onClick={delBrand}>
+                                    Xóa
+                                </Button>
+                                <Button variant="outlined" onClick={() => history.push('/admin/brand')} endIcon={<ArrowBackIcon />}>
+                                    Thoát
+                                </Button>
+                            </Stack>
+                        </div></>}
             </div>
         </div>
     )

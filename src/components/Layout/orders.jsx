@@ -76,7 +76,7 @@ export default function Orders() {
         listOrder && listOrder.forEach(item => {
             data.rows.push({
                 ngaydat: item.ngaydat,
-                total_price: item.total_price,
+                total_price: <strong>{new Intl.NumberFormat().format(item.total_price)}đ</strong>,
                 address: item.address,
                 phone_number: item.phone_number,
                 status: <div className="order-status">
